@@ -139,7 +139,13 @@
                     // console.log(tsks)
                     // console.log(tims)
 
-                    fetch()
+                    fetch(`https://achyuthdasari.github.io/To-do-list/tasks.json`)
+                    .then(response => response.json())
+                    .then(data => {this.setState({
+                            tasks: data.taskslst,
+                            timelst: data.timelst
+                        })
+                    })
 
                     if (tsks !== ""){
                         this.setState({
