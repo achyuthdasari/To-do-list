@@ -18,12 +18,16 @@
                 constructor(props) {
                     super(props);
                     this.state= { 
-                        tasks:["Task 1","Task 2","Task 3"],
+                        tasks:[],//["Task 1","Task 2","Task 3"],
                         input:"",
                         upd:false,
-                        tid:""
+                        tid:"",
+                        timelst:[],//["18:46:00","18:56:20","18:46:40"],
+                        inputtime:""
+
                     }
                 }
+
 
                 render(){
                     if (this.state.upd){
@@ -32,19 +36,22 @@
                     else{
                         var butn =<button onClick={this.addTask}> Add Task</button>
                     }
+                    // this.setState(tas)
                     return(
                         <div id="app">
                             <h1>Tasks</h1>
                             <ul id="todolst">
                                 {this.state.tasks.map((task,i)=>
                                     <li key={i}>
-                                        {task} {<button id={i} onClick={() => this.deleteTask(i)}> delete </button>} {<button id={i} onClick={() => this.updateTask(i)}> update </button>}
+                                        {task} {'\u00A0'} {<button id={i} onClick={() => this.deleteTask(i)}> delete </button>} {'\u00A0'}{'\u00A0'} {<button id={i} onClick={() => this.updateTask(i)}> update </button>}  {'\u00A0'}{'\u00A0'}{this.state.timelst[i]}
                                     </li>
                                 )}
 
                             </ul>
-                            <label for= "inpt"> Task </label>
+                            <label for= "inpt"> Todo Task </label>
                             <input id ="inpt" onChange={this.updateinpt} value={this.state.input} type="text" placeholder="Enter the task"></input><br/><br/>
+                            <label for= "timeinput">End Time </label>
+                            <input id ="timeinpt" onChange={this.updatetimeinpt} value={this.state.inputtime} type="text" placeholder="Enter Endtime in HH:MM:SS"></input><br/><br/>
                             
                             {butn}
                             
@@ -58,10 +65,18 @@
                     })
                 }
 
+                updatetimeinpt = (event) =>{
+                    this.setState({
+                        inputtime: event.target.value
+                    })
+                }
+
                 addTask =() =>{
                     this.setState(state=>({
                         tasks: [...state.tasks,state.input],
-                        input:""
+                        input:"",
+                        timelst: [...state.timelst,state.inputtime],
+                        inputtime:""
                     }))                   
                 }
 
@@ -78,14 +93,20 @@
                 }
 
                 deleteTask = (id) =>{
-                    var lst = this.state.tasks 
+                    var lst = this.state.tasks
+                    var tmelst=this.state.timelst
                     // console.log(id)
                     console.log("exec")
                     console.log(id)
                     console.log(lst)
+                    alert("This task will get deleted")
+
+                    tmelst.splice(id,1)
                     lst.splice(id,1)
+
                     this.setState({
-                        tasks:lst
+                        tasks:lst,
+                        timelst:tmelst
                     })
                 }
 
@@ -104,6 +125,57 @@
                         upd:true,
                         tid:id
                     })
+                }
+
+
+
+
+
+                componentDidMount() {
+
+                    const tsks= localStorage.getItem("taskslst")
+                    const tims= localStorage.getItem("timelst")
+
+                    // console.log(tsks)
+                    // console.log(tims)
+
+                    fetch()
+
+                    if (tsks !== ""){
+                        this.setState({
+                            tasks: JSON.parse(tsks),
+                            timelst: JSON.parse(tims)
+                        })
+                    }
+
+                    this.interval = setInterval(() => {
+                        let index = 0;
+
+                        while ( index < this.state.tasks.length) {
+                            var t = new Date()
+                            var time = ('0'+t.getHours()).substr(-2) + ":" + ('0'+t.getMinutes()).substr(-2) + ":" + ('0'+t.getSeconds()).substr(-2); ('0'+t.getSeconds()).substr(-2)
+                            if (time > this.state.timelst[index] ){  
+                                console.log(this.state.timelst[index], index,time)   
+                                console.log(this.state.timelst)                      
+                                this.deleteTask(index)
+                                // alert("Done")
+                                console.log(this.state.tasks,this.state.timelst)
+                            }  
+
+                            index++                     
+                        }
+                    }, 1000);
+
+                    // window.addEventListener("beforeunload",() => {
+                    //     var taskslst=[]
+                    //     var timelst=[]
+                    //     localStorage.setItem("taskslst", JSON.stringify(this.state.tasks))
+                    //     localStorage.setItem("timelst",JSON.stringify(this.state.timelst))
+                    // })
+                    
+
+                    
+
                 }
 
             }
