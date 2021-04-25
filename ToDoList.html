@@ -18,26 +18,36 @@
                 constructor(props) {
                     super(props);
                     this.state= { 
-                        tasks:[],
-                        input:""
+                        tasks:["Task 1","Task 2","Task 3"],
+                        input:"",
+                        upd:false,
+                        tid:""
                     }
                 }
 
                 render(){
+                    if (this.state.upd){
+                        var butn =<button onClick={this.updTask}> Update Task</button>
+                    }
+                    else{
+                        var butn =<button onClick={this.addTask}> Add Task</button>
+                    }
                     return(
                         <div id="app">
                             <h1>Tasks</h1>
                             <ul id="todolst">
                                 {this.state.tasks.map((task,i)=>
                                     <li key={i}>
-                                        {task} {<button id={i} onClick={() => this.deleteTask(i)}> delete </button>}
+                                        {task} {<button id={i} onClick={() => this.deleteTask(i)}> delete </button>} {<button id={i} onClick={() => this.updateTask(i)}> update </button>}
                                     </li>
                                 )}
 
                             </ul>
                             <label for= "inpt"> Task </label>
                             <input id ="inpt" onChange={this.updateinpt} value={this.state.input} type="text" placeholder="Enter the task"></input><br/><br/>
-                            <button onClick={this.addTask}> Add Task</button>
+                            
+                            {butn}
+                            
                         </div>
                     );
                 }
@@ -55,17 +65,44 @@
                     }))                   
                 }
 
+                updTask =() =>{
+                    var tsks = this.state.tasks;
+                    tsks[this.state.tid]=this.state.input
+
+                    this.setState(state=>({
+                        tasks:tsks ,
+                        input:"",
+                        upd:false,
+                        id:""
+                    }))                   
+                }
+
                 deleteTask = (id) =>{
                     var lst = this.state.tasks 
                     // console.log(id)
                     console.log("exec")
                     console.log(id)
-
-
                     console.log(lst)
                     lst.splice(id,1)
                     this.setState({
                         tasks:lst
+                    })
+                }
+
+
+                updateTask = (id) =>{
+                    var lst = this.state.tasks 
+                    // console.log(id)
+                    console.log("exec")
+                    console.log(id)
+                    console.log(lst)
+
+                    // lst.splice(id,1)
+                    this.setState({
+                        tasks:lst,
+                        input:lst[id],
+                        upd:true,
+                        tid:id
                     })
                 }
 
